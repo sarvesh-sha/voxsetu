@@ -1,0 +1,9 @@
+# robots.txt for VoxSetu
+# This file tells search engine crawlers which pages or files they can or can't request from your site
+
+# Disallow all crawlers from accessing any part of the site
+User-agent: *
+Disallow: /
+
+# Optional: You can specify a sitemap location if you have one
+# Sitemap: https://voxsetu.com/sitemap.xml
