@@ -83,17 +83,18 @@ if (demoForm) {
             return;
         }
 
+        const payload = new FormData(demoForm);
+
         fetch(FORM_ENDPOINT, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
                 'Accept': 'application/json'
             },
-            body: JSON.stringify(formData)
+            body: payload
         })
         .then(response => {
             if (!response.ok) {
-                throw new Error('Network response was not ok');
+                throw new Error(`Form submission failed with status ${response.status}`);
             }
             showFormSuccess(submitButton, originalText, demoForm);
         })
