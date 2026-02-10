@@ -40,6 +40,23 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Form handling
+// - Run locally: from project folder run "npx serve ." then open http://localhost:3000 (or use Live Server in VS Code).
+// - Formspree: get your form ID from https://formspree.io and set FORM_ENDPOINT below.
+const FORM_ENDPOINT = 'https://formspree.io/f/yourFormId';
+// Set to true to simulate success when testing locally or on server without a real endpoint. Set false for production.
+const FORM_DEMO_MODE = true;
+
+function showFormSuccess(submitButton, originalText, form) {
+    submitButton.textContent = 'Request Sent!';
+    submitButton.style.background = 'linear-gradient(135deg, #4CAF50 0%, #45a049 100%)';
+    form.reset();
+    setTimeout(() => {
+        submitButton.textContent = originalText;
+        submitButton.style.background = '';
+        submitButton.disabled = false;
+    }, 3000);
+}
+
 const demoForm = document.getElementById('demoForm');
 if (demoForm) {
     demoForm.addEventListener('submit', (e) => {
@@ -52,17 +69,21 @@ if (demoForm) {
             phone: document.getElementById('phone').value.trim()
         };
 
-        // Button loading state
         const submitButton = demoForm.querySelector('button[type="submit"]');
         const originalText = submitButton.textContent;
         submitButton.textContent = 'Sending...';
         submitButton.disabled = true;
 
-        // TODO: Replace this URL with your real backend or form service endpoint
-        // Examples:
-        // - Formspree: https://formspree.io/f/yourFormId
-        // - Your backend: https://api.yourdomain.com/demo-request
-        fetch('https://formspree.io/f/yourFormId', {
+        const isPlaceholder = FORM_ENDPOINT.includes('yourFormId');
+
+        // Demo mode: simulate success for local/server testing without configuring Formspree
+        if (FORM_DEMO_MODE && isPlaceholder) {
+            console.log('Demo form submitted (no backend):', formData);
+            setTimeout(() => showFormSuccess(submitButton, originalText, demoForm), 800);
+            return;
+        }
+
+        fetch(FORM_ENDPOINT, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -74,22 +95,23 @@ if (demoForm) {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
-            // Success UI
-            submitButton.textContent = 'Request Sent!';
-            submitButton.style.background = 'linear-gradient(135deg, #4CAF50 0%, #45a049 100%)';
-            demoForm.reset();
-
-            setTimeout(() => {
-                submitButton.textContent = originalText;
-                submitButton.style.background = '';
-                submitButton.disabled = false;
-            }, 3000);
+            showFormSuccess(submitButton, originalText, demoForm);
         })
         .catch(error => {
             console.error('Form submit failed:', error);
-            submitButton.textContent = 'Try Again';
+            submitButton.textContent = originalText;
             submitButton.disabled = false;
-            alert('There was an issue sending your request. Please try again in a moment.');
+            if (isPlaceholder) {
+                alert(
+                    'Form is not configured yet. To receive demo requests:\n\n' +
+                    '1. Go to https://formspree.io and create a free account.\n' +
+                    '2. Create a new form and copy its form ID.\n' +
+                    '3. In script.js, replace "yourFormId" in FORM_ENDPOINT with your form ID (e.g. https://formspree.io/f/abcdexyz).\n\n' +
+                    'For UI-only testing, keep FORM_DEMO_MODE = true.'
+                );
+            } else {
+                alert('There was an issue sending your request. Please try again in a moment.');
+            }
         });
     });
 }
