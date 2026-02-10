@@ -44,48 +44,53 @@ const demoForm = document.getElementById('demoForm');
 if (demoForm) {
     demoForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        
+
         const formData = {
-            name: document.getElementById('name').value,
-            email: document.getElementById('email').value,
-            company: document.getElementById('company').value,
-            phone: document.getElementById('phone').value
+            name: document.getElementById('name').value.trim(),
+            email: document.getElementById('email').value.trim(),
+            company: document.getElementById('company').value.trim(),
+            phone: document.getElementById('phone').value.trim()
         };
-        
-        // Here you would typically send the data to your backend
-        // For now, we'll show a success message
-        console.log('Form submitted:', formData);
-        
-        // Show success message
+
+        // Button loading state
         const submitButton = demoForm.querySelector('button[type="submit"]');
         const originalText = submitButton.textContent;
-        submitButton.textContent = 'Request Sent!';
-        submitButton.style.background = 'linear-gradient(135deg, #4CAF50 0%, #45a049 100%)';
+        submitButton.textContent = 'Sending...';
         submitButton.disabled = true;
-        
-        // Reset form
-        demoForm.reset();
-        
-        // Reset button after 3 seconds
-        setTimeout(() => {
-            submitButton.textContent = originalText;
-            submitButton.style.background = '';
+
+        // TODO: Replace this URL with your real backend or form service endpoint
+        // Examples:
+        // - Formspree: https://formspree.io/f/yourFormId
+        // - Your backend: https://api.yourdomain.com/demo-request
+        fetch('https://formspree.io/f/yourFormId', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            // Success UI
+            submitButton.textContent = 'Request Sent!';
+            submitButton.style.background = 'linear-gradient(135deg, #4CAF50 0%, #45a049 100%)';
+            demoForm.reset();
+
+            setTimeout(() => {
+                submitButton.textContent = originalText;
+                submitButton.style.background = '';
+                submitButton.disabled = false;
+            }, 3000);
+        })
+        .catch(error => {
+            console.error('Form submit failed:', error);
+            submitButton.textContent = 'Try Again';
             submitButton.disabled = false;
-        }, 3000);
-        
-        // In production, you would send this to your API:
-        // fetch('/api/demo-request', {
-        //     method: 'POST',
-        //     headers: { 'Content-Type': 'application/json' },
-        //     body: JSON.stringify(formData)
-        // })
-        // .then(response => response.json())
-        // .then(data => {
-        //     // Handle success
-        // })
-        // .catch(error => {
-        //     // Handle error
-        // });
+            alert('There was an issue sending your request. Please try again in a moment.');
+        });
     });
 }
 
@@ -116,6 +121,12 @@ window.addEventListener('scroll', () => {
         hero.style.opacity = 1 - (scrolled / window.innerHeight) * 0.5;
     }
 });
+
+// Cursor-follow hero interactions removed per request
+
+// "What is VoxSetu" cursor interactions removed per request
+
+// Image tilt/parallax interactions removed per request
 
 // Add active state to nav links based on scroll position
 const sections = document.querySelectorAll('section[id]');

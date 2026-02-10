@@ -179,7 +179,7 @@
         <div class="container">
             <div class="nav-content">
                 <div class="logo">
-                    <svg width="140" height="40" viewBox="0 0 140 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- <svg width="140" height="40" viewBox="0 0 140 40" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <text x="0" y="28" font-family="serif" font-size="24" font-weight="bold" fill="#666666">VOX</text>
                         <g transform="translate(52, 8)">
                             <rect x="0" y="12" width="3" height="8" fill="url(#waveGradient)"/>
@@ -199,8 +199,9 @@
                                 </linearGradient>
                             </defs>
                         </g>
-                        <text x="87" y="28" font-family="sans-serif" font-size="18" fill="#666666">setu.</text>
-                    </svg>
+                        <text x="87" y="28" font-family="sans-serif" font-size="18" fill="#666666">setu</text>
+                    </svg> -->
+                    <img src="images/vox-logo.png" alt="VoxSetu Logo" class="logo-image">
                 </div>
                 <div class="nav-links">
                     <a href="#features">Features</a>
@@ -220,35 +221,113 @@
         </div>
         <div class="container">
             <div class="hero-content">
-                <div class="hero-logo">
-                    <svg width="280" height="80" viewBox="0 0 280 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <text x="0" y="56" font-family="serif" font-size="48" font-weight="bold" fill="#CCCCCC">VOX</text>
-                        <g transform="translate(98, 16)">
-                            <rect x="0" y="24" width="6" height="16" fill="url(#heroWaveGradient)"/>
-                            <rect x="8" y="20" width="6" height="24" fill="url(#heroWaveGradient)"/>
-                            <rect x="16" y="16" width="6" height="32" fill="url(#heroWaveGradient)"/>
-                            <rect x="24" y="12" width="6" height="40" fill="url(#heroWaveGradient)"/>
-                            <rect x="32" y="8" width="6" height="48" fill="url(#heroWaveGradient)"/>
-                            <rect x="40" y="12" width="6" height="40" fill="url(#heroWaveGradient)"/>
-                            <rect x="48" y="16" width="6" height="32" fill="url(#heroWaveGradient)"/>
-                            <rect x="56" y="20" width="6" height="24" fill="url(#heroWaveGradient)"/>
-                            <rect x="64" y="24" width="6" height="16" fill="url(#heroWaveGradient)"/>
-                            <defs>
-                                <linearGradient id="heroWaveGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                    <stop offset="0%" style="stop-color:#FF6B35;stop-opacity:1" />
-                                    <stop offset="50%" style="stop-color:#FF8E53;stop-opacity:1" />
-                                    <stop offset="100%" style="stop-color:#FF1493;stop-opacity:1" />
-                                </linearGradient>
-                            </defs>
-                        </g>
-                        <text x="170" y="56" font-family="sans-serif" font-size="36" fill="#CCCCCC">setu.</text>
-                    </svg>
-                </div>
-                <h1 class="hero-headline">AI Voice Calling That Scales Customer Conversations — Globally.</h1>
+                <h1 class="hero-headline"><span class="highlight">AI Voice Calling</span> that scales customer conversations — <span class="highlight">globally</span>.</h1>
                 <p class="hero-subheadline">AI-powered voice agents for customer support, sales, reminders, and operational calling—across industries and geographies.</p>
                 <div class="hero-ctas">
                     <a href="#contact" class="btn-primary">Request a Demo</a>
                     <a href="#contact" class="btn-secondary">Book a Call</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <script>
+    (function() {
+        const heroEl = document.querySelector('.hero');
+        const canvas = document.createElement('canvas');
+        canvas.id = 'waterCanvas';
+        canvas.className = 'hero-water';
+        heroEl.appendChild(canvas);
+        const ctx = canvas.getContext('2d');
+
+        function resize() {
+            const rect = heroEl.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        const ripples = [];
+        let lastTime = 0;
+        let rippleTimer = 0;
+
+        class Ripple {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.r = 0;
+                this.max = 280;
+                this.alpha = 0.8;
+                this.speed = 2.0;
+                this.decay = 0.012;
+            }
+            update() {
+                this.r += this.speed;
+                this.alpha -= this.decay;
+            }
+            render() {
+                if (this.alpha <= 0) return;
+                const g = ctx.createRadialGradient(this.x, this.y, this.r * 0.6, this.x, this.y, this.r);
+                g.addColorStop(0, `rgba(255,126,70,${this.alpha * 0.18})`);
+                g.addColorStop(0.7, `rgba(255,126,70,${this.alpha * 0.06})`);
+                g.addColorStop(1, `rgba(255,126,70,0)`);
+                ctx.fillStyle = g;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            isDead() {
+                return this.alpha <= 0 || this.r >= this.max;
+            }
+        }
+
+        heroEl.addEventListener('mousemove', (e) => {
+            const rect = heroEl.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            ripples.push(new Ripple(x, y));
+        });
+
+        function animate(currentTime) {
+            const dt = currentTime - lastTime;
+            lastTime = currentTime;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            rippleTimer += dt;
+            for (let i = ripples.length - 1; i >= 0; i--) {
+                const r = ripples[i];
+                r.update();
+                r.render();
+                if (r.isDead()) {
+                    ripples.splice(i, 1);
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+        requestAnimationFrame(animate);
+    })();
+    </script>
+
+    <!-- Product Showcase -->
+    <section class="product-showcase">
+        <div class="container">
+            <div class="product-layout">
+                <div class="product-copy">
+                    <h2>See VoxSetu in Action</h2>
+                    <p class="product-lead">
+                        Configure AI voice assistants, define prompts, and manage live conversations from a single enterprise-ready console.
+                    </p>
+                    <ul class="product-bullets">
+                        <li>Design custom assistants for support, sales, and operations.</li>
+                        <li>Control models, prompts, and tools with full transparency.</li>
+                        <li>Monitor behavior and iterate quickly before going to production.</li>
+                    </ul>
+                </div>
+                <div class="product-image-wrapper">
+                    <img src="images/vox-setu-product.png"
+                         alt="VoxSetu product dashboard showing configuration of an AI voice assistant"
+                         loading="lazy" style="
+    width: 100%;
+">
                 </div>
             </div>
         </div>
@@ -263,16 +342,16 @@
             </div>
             <div class="customers-grid">
                 <div class="customer-logo">
-                    <img src="Techlene.png" alt="Techlene logo - enterprise customer of VoxSetu" loading="lazy">
+                    <img src="images/Techlene.png" alt="Techlene logo - enterprise customer of VoxSetu" loading="lazy">
                 </div>
                 <div class="customer-logo">
-                    <img src="fabhr.png" alt="FabHR logo - HR tech customer using VoxSetu" loading="lazy">
+                    <img src="images/fabhr.png" alt="FabHR logo - HR tech customer using VoxSetu" loading="lazy">
                 </div>
                 <div class="customer-logo">
-                    <img src="NSS.png" alt="Nagar Software Solution (NSS) logo - software customer of VoxSetu" loading="lazy">
+                    <img src="images/NSS.png" alt="Nagar Software Solution (NSS) logo - software customer of VoxSetu" loading="lazy">
                 </div>
                 <div class="customer-logo">
-                    <img src="a2zprintinghub.png" alt="A2Z Packaging Services logo - printing and packaging customer of VoxSetu" loading="lazy">
+                    <img src="images/a2zprintinghub.png" alt="A2Z Packaging Services logo - printing and packaging customer of VoxSetu" loading="lazy">
                 </div>
             </div>
         </div>
@@ -285,21 +364,46 @@
                 <h2>What is VoxSetu</h2>
             </div>
             <div class="what-is-content">
-                <p class="lead-text">VoxSetu is an intent-driven AI voice calling platform and enterprise voice automation solution that automates inbound and outbound calls while delivering natural, human-like conversations.</p>
+                <p class="lead-text">VoxSetu automates inbound and outbound calls using AI.
+                It delivers natural, human-like voice conversations.</p>
                 <div class="what-is-features">
                     <div class="feature-item">
                         <div class="feature-icon">✓</div>
-                        <p>Built for real conversations with multi-turn, context-aware AI that works across customer care, sales, and operations</p>
+                        <p>
+                            Built for real conversations using multi-turn, context-aware AI that understands intent and adapts
+                            dynamically across
+                            customer care, sales, and operations—delivering natural, human-like interactions at every stage of the call.
+                        </p>
                     </div>
+                
                     <div class="feature-item">
                         <div class="feature-icon">✓</div>
-                        <p>Handles high call volumes with enterprise-ready reliability, built for production environments</p>
+                        <p>
+                            Designed to handle high call volumes with enterprise-grade reliability, ensuring consistent performance, low
+                            latency,
+                            and high availability even in large-scale, production environments.
+                        </p>
                     </div>
+                
                     <div class="feature-item">
                         <div class="feature-icon">✓</div>
-                        <p>Integrates seamlessly with CRMs, ERPs, databases, and internal tools to automate workflows in real time</p>
+                        <p>
+                            Seamlessly integrates with CRMs, ERPs, databases, and internal tools to automate workflows in real time,
+                            enabling actions,
+                            updates, and data synchronization during live conversations.
+                        </p>
+                    </div>
+                
+                    <div class="feature-item">
+                        <div class="feature-icon">✓</div>
+                        <p>
+                            Provides real-time analytics and actionable insights from every call, helping teams track performance,
+                            understand customer
+                            behavior, optimize call outcomes, and continuously improve customer experiences.
+                        </p>
                     </div>
                 </div>
+
             </div>
         </div>
     </section>
@@ -500,11 +604,37 @@
                     </ul>
                 </div>
                 <div class="language-visual">
-                    <div class="globe-icon">🌐</div>
+                    <div class="video-wrapper">
+                        <div class="video-container">
+                            <span class="video-label">Global Languages</span>
+                            <video autoplay muted loop playsinline class="globe-video">
+                                <source src="video/01.mp4" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                            <button class="video-control" id="langVideoToggle">Pause</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
+    <script>
+    (function() {
+        const video = document.querySelector('.globe-video');
+        const toggle = document.getElementById('langVideoToggle');
+        if (video && toggle) {
+            toggle.addEventListener('click', () => {
+                if (video.paused) {
+                    video.play();
+                    toggle.textContent = 'Pause';
+                } else {
+                    video.pause();
+                    toggle.textContent = 'Play';
+                }
+            });
+        }
+    })();
+    </script>
 
     <!-- Security & Trust -->
     <section class="security-trust">
@@ -569,29 +699,30 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-brand">
-                    <div class="footer-logo">
-                        <svg width="140" height="40" viewBox="0 0 140 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <text x="0" y="28" font-family="serif" font-size="24" font-weight="bold" fill="#999999">VO</text>
-                            <g transform="translate(40, 8)">
-                                <rect x="0" y="12" width="3" height="8" fill="url(#footerWaveGradient)"/>
-                                <rect x="4" y="10" width="3" height="12" fill="url(#footerWaveGradient)"/>
-                                <rect x="8" y="8" width="3" height="16" fill="url(#footerWaveGradient)"/>
-                                <rect x="12" y="6" width="3" height="20" fill="url(#footerWaveGradient)"/>
-                                <rect x="16" y="4" width="3" height="24" fill="url(#footerWaveGradient)"/>
-                                <rect x="20" y="6" width="3" height="20" fill="url(#footerWaveGradient)"/>
-                                <rect x="24" y="8" width="3" height="16" fill="url(#footerWaveGradient)"/>
-                                <rect x="28" y="10" width="3" height="12" fill="url(#footerWaveGradient)"/>
-                                <rect x="32" y="12" width="3" height="8" fill="url(#footerWaveGradient)"/>
+                    <div class="logo">
+                        <!-- <svg width="140" height="40" viewBox="0 0 140 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <text x="0" y="28" font-family="serif" font-size="24" font-weight="bold" fill="#666666">VOX</text>
+                            <g transform="translate(52, 8)">
+                                <rect x="0" y="12" width="3" height="8" fill="url(#waveGradient)"/>
+                                <rect x="4" y="10" width="3" height="12" fill="url(#waveGradient)"/>
+                                <rect x="8" y="8" width="3" height="16" fill="url(#waveGradient)"/>
+                                <rect x="12" y="6" width="3" height="20" fill="url(#waveGradient)"/>
+                                <rect x="16" y="4" width="3" height="24" fill="url(#waveGradient)"/>
+                                <rect x="20" y="6" width="3" height="20" fill="url(#waveGradient)"/>
+                                <rect x="24" y="8" width="3" height="16" fill="url(#waveGradient)"/>
+                                <rect x="28" y="10" width="3" height="12" fill="url(#waveGradient)"/>
+                                <rect x="32" y="12" width="3" height="8" fill="url(#waveGradient)"/>
                                 <defs>
-                                    <linearGradient id="footerWaveGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                    <linearGradient id="waveGradient" x1="0%" y1="0%" x2="100%" y2="0%">
                                         <stop offset="0%" style="stop-color:#FF6B35;stop-opacity:1" />
                                         <stop offset="50%" style="stop-color:#FF8E53;stop-opacity:1" />
                                         <stop offset="100%" style="stop-color:#FF1493;stop-opacity:1" />
                                     </linearGradient>
                                 </defs>
                             </g>
-                            <text x="75" y="28" font-family="sans-serif" font-size="18" fill="#999999">setu.</text>
-                        </svg>
+                            <text x="87" y="28" font-family="sans-serif" font-size="18" fill="#666666">setu</text>
+                        </svg> -->
+                        <img src="images/vox-logo.png" alt="VoxSetu Logo" class="logo-image">
                     </div>
                     <p class="footer-tagline">AI Voice Calling Platform</p>
                     <p class="footer-company">Exatip Technologies</p>
